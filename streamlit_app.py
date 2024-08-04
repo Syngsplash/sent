@@ -78,7 +78,7 @@ def main():
             
             #api key ccall
             client=Groq(
-                api_key=["GROQ_API_KEY"],
+                api_key=st.secrets["GROQ_API_KEY"],
             )
             completion = client.chat.completions.create(
                 model="llama-3.1-70b-versatile",
