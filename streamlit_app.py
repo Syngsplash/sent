@@ -50,10 +50,22 @@ def main():
     occupation_skills = df[df['ANZSCO Title'] == selected_occupation]
     skills_text = "\n".join([f"{row['Core Competency']}: {row['Anchor Value']}" for _, row in occupation_skills.iterrows()])
 
-    # Chat input
-    user_input = st.text_input("Ask a question about your resume or skills:")
+    # Initialize chat history
+    if "messages" not in st.session_state:
+        st.session_state.messages = []
 
-    if st.button("Submit"):
+    # Display chat messages from history on app rerun
+    for message in st.session_state.messages:
+        with st.chat_message(message["role"]):
+            st.markdown(message["content"])
+
+    # React to user input
+    if prompt := st.chat_input("Ask a question about your resume or skills:"):
+        # Display user message in chat message container
+        st.chat_message("user").markdown(prompt)
+        # Add user message to chat history
+        st.session_state.messages.append({"role": "user", "content": prompt})
+
         if uploaded_resume is not None:
             # Extract text based on file type
             file_type = uploaded_resume.type
@@ -64,18 +76,16 @@ def main():
             else:  # Assume it's a text file
                 resume_content = uploaded_resume.getvalue().decode("utf-8")
             
-            # Use Streamlit's secrets management to get the API key
+            #api key ccall
             client=Groq(
-                api_key=st.secrets["GROQ_API_KEY"],
+                api_key=["GROQ_API_KEY"],
             )
-
-                          
             completion = client.chat.completions.create(
                 model="llama-3.1-70b-versatile",
                 messages=[
                     {
                         "role": "user",
-                        "content": f"Help a user to understand how to gain soft skills for their resume. Here is the resume:{resume_content}\nHere are the skills required for the occupation '{selected_occupation}':\n{skills_text}\n\nUser question: {user_input}"
+                        "content": f"Help a user to understand how to gain soft skills for their resume. Here is the resume:{resume_content}\nHere are the skills required for the occupation '{selected_occupation}':\n{skills_text}\n\nUser question: {prompt}"
                     }
                 ],
                 temperature=1,
@@ -85,8 +95,11 @@ def main():
                 stop=None,
             )
 
-            # Display the response
-            st.write(completion.choices[0].message.content)
+            # Display assistant response in chat message container
+            with st.chat_message("assistant"):
+                st.markdown(completion.choices[0].message.content)
+            # Add assistant response to chat history
+            st.session_state.messages.append({"role": "assistant", "content": completion.choices[0].message.content})
 
             # Save the response to a file
             timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
