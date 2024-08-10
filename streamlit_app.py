@@ -44,7 +44,7 @@ def main():
     
     # Occupation selector
     unique_occupations = df['ANZSCO Title'].unique()
-    selected_occupation = st.selectbox("Select your occupation", unique_occupations)
+    selected_occupation = st.selectbox("Select your job/occupation", unique_occupations)
 
     # Get skills for selected occupation
     occupation_skills = df[df['ANZSCO Title'] == selected_occupation]
@@ -60,7 +60,7 @@ def main():
             st.markdown(message["content"])
 
     # React to user input
-    if prompt := st.chat_input("Ask a question about your resume or skills, and watch the magic begin!:"):
+    if prompt := st.chat_input("Ask a question about your resume or skills, and watch the magic begin!"):
         # Display user message in chat message container
         st.chat_message("user").markdown(prompt)
         # Add user message to chat history
