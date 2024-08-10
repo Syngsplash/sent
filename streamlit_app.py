@@ -31,7 +31,7 @@ def extract_text_from_image(image_file):
 
 def main():
     st.title("Resume Assistant Chatbot")
-
+    
     # Load the job skills CSV file internally
     df = load_data()
 
@@ -60,7 +60,7 @@ def main():
             st.markdown(message["content"])
 
     # React to user input
-    if prompt := st.chat_input("Ask a question about your resume or skills:"):
+    if prompt := st.chat_input("Ask a question about your resume or skills, and watch the magic begin!:"):
         # Display user message in chat message container
         st.chat_message("user").markdown(prompt)
         # Add user message to chat history
